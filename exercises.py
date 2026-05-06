@@ -665,10 +665,292 @@ EXERCISES = [
             {"custom": "str(Punto(0,0))", "expected": "(0, 0)"},
         ],
     },
+    # ============================================================
+    # NIVEL AVANZADO (31-40)
+    # ============================================================
+    {
+        "id": 31,
+        "nivel": "Avanzado",
+        "titulo": "Paréntesis balanceados",
+        "enunciado": (
+            "Un editor de código necesita verificar si los paréntesis, corchetes y llaves "
+            "de una expresión están correctamente balanceados. Escribe una función que "
+            "reciba un string y devuelva `True` si los símbolos `()`, `[]` y `{}` están "
+            "balanceados y correctamente anidados, `False` en caso contrario. Otros "
+            "caracteres deben ignorarse."
+        ),
+        "pistas": [
+            "Usa una pila (lista): cuando veas un símbolo de apertura, hazle `append`.",
+            "Cuando veas uno de cierre, comprueba que la pila no esté vacía y que el último de la pila sea el de apertura correspondiente.",
+            "Al final, la pila debe quedar vacía.",
+        ],
+        "ejemplo": 'balanceado("([{}])") → True; balanceado("(]") → False',
+        "firma": "def balanceado(s):",
+        "function_name": "balanceado",
+        "mode": "function",
+        "tests": [
+            {"args": ["()"], "expected": True},
+            {"args": ["()[]{}"], "expected": True},
+            {"args": ["(]"], "expected": False},
+            {"args": ["([{}])"], "expected": True},
+            {"args": [""], "expected": True},
+            {"args": ["((("], "expected": False},
+            {"args": ["a(b)c[d]"], "expected": True},
+            {"args": ["({[)]}"], "expected": False},
+        ],
+    },
+    {
+        "id": 32,
+        "nivel": "Avanzado",
+        "titulo": "¿Son anagramas?",
+        "enunciado": (
+            "Dos palabras son anagramas si una es una reordenación de las letras de la otra. "
+            "Escribe una función que reciba dos strings y devuelva `True` si son anagramas. "
+            "Ignora mayúsculas/minúsculas y los espacios."
+        ),
+        "pistas": [
+            "Normaliza ambos strings: pásalos a minúsculas y elimina espacios.",
+            "Dos palabras son anagramas si tienen los mismos caracteres con las mismas frecuencias.",
+            "Una forma sencilla: `sorted(a) == sorted(b)` después de normalizar.",
+        ],
+        "ejemplo": 'son_anagramas("Listen", "Silent") → True',
+        "firma": "def son_anagramas(a, b):",
+        "function_name": "son_anagramas",
+        "mode": "function",
+        "tests": [
+            {"args": ["listen", "silent"], "expected": True},
+            {"args": ["Hello", "World"], "expected": False},
+            {"args": ["Roma", "amor"], "expected": True},
+            {"args": ["a gentleman", "elegant man"], "expected": True},
+            {"args": ["abc", "ab"], "expected": False},
+            {"args": ["", ""], "expected": True},
+        ],
+    },
+    {
+        "id": 33,
+        "nivel": "Avanzado",
+        "titulo": "Transponer matriz",
+        "enunciado": (
+            "Una matriz se representa como una lista de listas (cada lista interna es una "
+            "fila). Escribe una función que devuelva la matriz transpuesta: las filas pasan "
+            "a ser columnas y viceversa. **No uses NumPy**."
+        ),
+        "pistas": [
+            "Si la matriz tiene `f` filas y `c` columnas, la transpuesta tiene `c` filas y `f` columnas.",
+            "Truco corto con zip: `[list(fila) for fila in zip(*matriz)]`.",
+            "También puedes hacerlo con dos bucles `for` anidados.",
+        ],
+        "ejemplo": "transponer([[1,2,3],[4,5,6]]) → [[1,4],[2,5],[3,6]]",
+        "firma": "def transponer(matriz):",
+        "function_name": "transponer",
+        "mode": "function",
+        "tests": [
+            {"args": [[[1, 2, 3], [4, 5, 6]]], "expected": [[1, 4], [2, 5], [3, 6]]},
+            {"args": [[[1]]], "expected": [[1]]},
+            {"args": [[[1, 2], [3, 4]]], "expected": [[1, 3], [2, 4]]},
+            {"args": [[[1, 2, 3]]], "expected": [[1], [2], [3]]},
+            {"args": [[[1], [2], [3]]], "expected": [[1, 2, 3]]},
+        ],
+    },
+    {
+        "id": 34,
+        "nivel": "Avanzado",
+        "titulo": "Compresión Run-Length (RLE)",
+        "enunciado": (
+            "Implementa una compresión sencilla: para una cadena, reemplaza cada secuencia "
+            "de un mismo carácter por el carácter seguido del número de veces que se repite. "
+            'Por ejemplo, `"aaabb"` se convierte en `"a3b2"`. La cadena vacía debe devolver `""`.'
+        ),
+        "pistas": [
+            "Recorre la cadena llevando el carácter actual y un contador.",
+            "Cuando el carácter cambia (o terminas la cadena), añade `caracter + str(contador)` al resultado.",
+            "Cuidado con el último grupo: tienes que añadirlo después del bucle.",
+        ],
+        "ejemplo": 'comprimir("aaabb") → "a3b2"',
+        "firma": "def comprimir(s):",
+        "function_name": "comprimir",
+        "mode": "function",
+        "tests": [
+            {"args": ["aaabb"], "expected": "a3b2"},
+            {"args": ["abc"], "expected": "a1b1c1"},
+            {"args": [""], "expected": ""},
+            {"args": ["aaaa"], "expected": "a4"},
+            {"args": ["aabbbaa"], "expected": "a2b3a2"},
+            {"args": ["x"], "expected": "x1"},
+        ],
+    },
+    {
+        "id": 35,
+        "nivel": "Avanzado",
+        "titulo": "Búsqueda binaria",
+        "enunciado": (
+            "Dada una lista **ordenada de menor a mayor** y un valor objetivo, devuelve el "
+            "índice donde se encuentra el objetivo, o `-1` si no está. Implementa el "
+            "algoritmo de búsqueda binaria (no uses `lista.index`)."
+        ),
+        "pistas": [
+            "Mantén dos índices `izq` y `der` que delimitan la zona de búsqueda.",
+            "En cada paso, calcula el medio `m = (izq + der) // 2` y compara con el objetivo.",
+            "Si el valor del medio es menor, busca a la derecha (`izq = m + 1`); si es mayor, a la izquierda (`der = m - 1`).",
+        ],
+        "ejemplo": "busqueda_binaria([1,3,5,7,9], 5) → 2",
+        "firma": "def busqueda_binaria(lista, objetivo):",
+        "function_name": "busqueda_binaria",
+        "mode": "function",
+        "tests": [
+            {"args": [[1, 3, 5, 7, 9], 5], "expected": 2},
+            {"args": [[1, 3, 5, 7, 9], 4], "expected": -1},
+            {"args": [[], 1], "expected": -1},
+            {"args": [[1], 1], "expected": 0},
+            {"args": [[1, 2, 3, 4, 5], 1], "expected": 0},
+            {"args": [[1, 2, 3, 4, 5], 5], "expected": 4},
+            {"args": [[1, 2, 3, 4, 5], 6], "expected": -1},
+        ],
+    },
+    {
+        "id": 36,
+        "nivel": "Avanzado",
+        "titulo": "Mergesort",
+        "enunciado": (
+            "Implementa el algoritmo **mergesort** de forma recursiva. La función debe "
+            "recibir una lista y devolver una **nueva** lista ordenada de menor a mayor. "
+            "No uses `sorted()` ni `list.sort()`."
+        ),
+        "pistas": [
+            "Caso base: una lista de 0 o 1 elementos ya está ordenada.",
+            "Divide la lista en dos mitades, ordena cada mitad recursivamente, luego mezcla.",
+            "Para mezclar dos listas ordenadas: usa dos índices que avanzan eligiendo siempre el menor.",
+        ],
+        "ejemplo": "mergesort([3,1,4,1,5,9,2,6]) → [1,1,2,3,4,5,6,9]",
+        "firma": "def mergesort(lista):",
+        "function_name": "mergesort",
+        "mode": "function",
+        "tests": [
+            {"args": [[3, 1, 4, 1, 5, 9, 2, 6]], "expected": [1, 1, 2, 3, 4, 5, 6, 9]},
+            {"args": [[]], "expected": []},
+            {"args": [[1]], "expected": [1]},
+            {"args": [[5, 4, 3, 2, 1]], "expected": [1, 2, 3, 4, 5]},
+            {"args": [[2, 2, 2]], "expected": [2, 2, 2]},
+            {"args": [[-3, 0, -1, 5, 2]], "expected": [-3, -1, 0, 2, 5]},
+        ],
+    },
+    {
+        "id": 37,
+        "nivel": "Avanzado",
+        "titulo": "Decorador @memoize + Fibonacci",
+        "enunciado": (
+            "Calcular Fibonacci recursivo sin caché es exponencialmente lento. "
+            "Implementa un decorador `memoize` que guarde en un diccionario los resultados "
+            "de cada llamada (usando los argumentos como clave) y los reutilice. "
+            "Aplícalo con `@memoize` a una función recursiva `fib(n)` que devuelve el "
+            "n-ésimo número de Fibonacci empezando por `fib(0)=0`, `fib(1)=1`."
+        ),
+        "pistas": [
+            "Plantilla del decorador:\n```\ndef memoize(f):\n    cache = {}\n    def wrapper(*args):\n        if args not in cache:\n            cache[args] = f(*args)\n        return cache[args]\n    return wrapper\n```",
+            "Después: `@memoize` justo encima de `def fib(n):`.",
+            "Sin la caché, `fib(30)` realizaría más de un millón de llamadas; con la caché, basta con 31.",
+        ],
+        "ejemplo": "fib(10) → 55; fib(30) → 832040",
+        "firma": "def memoize(f):\n    ...\n@memoize\ndef fib(n):",
+        "function_name": None,
+        "mode": "custom",
+        "tests": [
+            {"custom": "fib(0)", "expected": 0},
+            {"custom": "fib(1)", "expected": 1},
+            {"custom": "fib(2)", "expected": 1},
+            {"custom": "fib(10)", "expected": 55},
+            {"custom": "fib(20)", "expected": 6765},
+            {"custom": "fib(30)", "expected": 832040},
+        ],
+    },
+    {
+        "id": 38,
+        "nivel": "Avanzado",
+        "titulo": "Clase Pila (Stack)",
+        "enunciado": (
+            "Implementa una clase `Pila` (estructura LIFO) con los métodos:\n"
+            "- `push(x)`: añade `x` arriba de la pila.\n"
+            "- `pop()`: elimina y devuelve el elemento de arriba.\n"
+            "- `peek()`: devuelve el elemento de arriba **sin** eliminarlo.\n"
+            "- `vacia()`: devuelve `True` si la pila está vacía.\n"
+            "- `tamano()`: devuelve el número de elementos."
+        ),
+        "pistas": [
+            "Usa una lista interna `self._items = []`.",
+            "`push` → `self._items.append(x)`.",
+            "`pop` → `self._items.pop()`.",
+            "`peek` → `self._items[-1]`.",
+        ],
+        "ejemplo": "p = Pila(); p.push(1); p.push(2); p.peek() → 2; p.pop() → 2",
+        "firma": "class Pila:",
+        "function_name": None,
+        "mode": "custom",
+        "tests": [
+            {"custom": "Pila().vacia()", "expected": True},
+            {"custom": "(lambda p: (p.push(1), p.push(2), p.peek())[-1])(Pila())", "expected": 2},
+            {"custom": "(lambda p: (p.push(1), p.push(2), p.pop())[-1])(Pila())", "expected": 2},
+            {"custom": "(lambda p: (p.push(1), p.push(2), p.push(3), p.pop(), p.tamano())[-1])(Pila())", "expected": 2},
+            {"custom": "(lambda p: (p.push(7), p.vacia())[-1])(Pila())", "expected": False},
+        ],
+    },
+    {
+        "id": 39,
+        "nivel": "Avanzado",
+        "titulo": "Validar caja Sudoku 3×3",
+        "enunciado": (
+            "Una caja válida de Sudoku es una matriz 3×3 que no contiene números repetidos "
+            "del 1 al 9. Las casillas vacías se representan con `0` y se ignoran (se permite "
+            "tener varios `0`). Escribe una función que reciba una lista de 3 listas de 3 "
+            "enteros y devuelva `True` si la caja es válida."
+        ),
+        "pistas": [
+            "Aplana la matriz: `valores = [n for fila in caja for n in fila]`.",
+            "Filtra los ceros y comprueba que no haya duplicados: si convertir a `set` cambia el tamaño, hay duplicados.",
+        ],
+        "ejemplo": "valida_caja([[1,2,3],[4,5,6],[7,8,9]]) → True",
+        "firma": "def valida_caja(caja):",
+        "function_name": "valida_caja",
+        "mode": "function",
+        "tests": [
+            {"args": [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], "expected": True},
+            {"args": [[[1, 1, 2], [3, 4, 5], [6, 7, 8]]], "expected": False},
+            {"args": [[[0, 0, 0], [0, 0, 0], [0, 0, 0]]], "expected": True},
+            {"args": [[[1, 2, 0], [3, 4, 0], [5, 6, 0]]], "expected": True},
+            {"args": [[[1, 2, 3], [4, 1, 6], [7, 8, 9]]], "expected": False},
+            {"args": [[[5, 0, 0], [0, 5, 0], [0, 0, 9]]], "expected": False},
+        ],
+    },
+    {
+        "id": 40,
+        "nivel": "Avanzado",
+        "titulo": "Subarray contiguo de suma máxima (Kadane)",
+        "enunciado": (
+            "Dada una lista de enteros (positivos y/o negativos), encuentra la suma máxima "
+            "que se puede obtener de un **subarray contiguo no vacío**. Implementa el "
+            "algoritmo de Kadane en O(n)."
+        ),
+        "pistas": [
+            "Lleva dos acumuladores: `mejor_aqui` (mejor que termina en el índice actual) y `mejor_total` (mejor visto en general).",
+            "En cada elemento `x`: `mejor_aqui = max(x, mejor_aqui + x)` y `mejor_total = max(mejor_total, mejor_aqui)`.",
+            "Inicializa ambos con el primer elemento de la lista.",
+        ],
+        "ejemplo": "max_subarray([-2,1,-3,4,-1,2,1,-5,4]) → 6  (subarray [4,-1,2,1])",
+        "firma": "def max_subarray(lista):",
+        "function_name": "max_subarray",
+        "mode": "function",
+        "tests": [
+            {"args": [[-2, 1, -3, 4, -1, 2, 1, -5, 4]], "expected": 6},
+            {"args": [[1, 2, 3]], "expected": 6},
+            {"args": [[-1, -2, -3]], "expected": -1},
+            {"args": [[5]], "expected": 5},
+            {"args": [[5, -1, 5]], "expected": 9},
+            {"args": [[-2, -3, 4, -1, -2, 1, 5, -3]], "expected": 7},
+        ],
+    },
 ]
 
 
-NIVELES = ["Básico", "Intermedio", "Intermedio-superior"]
+NIVELES = ["Básico", "Intermedio", "Intermedio-superior", "Avanzado"]
 
 
 def por_nivel(nivel: str):
