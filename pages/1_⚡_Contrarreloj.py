@@ -25,15 +25,19 @@ st.set_page_config(
 # ------------------------------------------------------------
 # Estado de sesión
 # ------------------------------------------------------------
+PLANTILLA = "# Escribe tu código aquí (usa print)\n"
+
+
 def _init_state():
     defaults = {
-        "sc_state": "idle",         # idle | playing | exploded | done
-        "sc_idx": 0,                 # índice del desafío actual
+        "sc_state": "idle",              # idle | playing | exploded | done
+        "sc_idx": 0,                      # índice del desafío actual
         "sc_score": 0,
-        "sc_start_ts": None,         # timestamp de inicio del desafío actual
-        "sc_editor_nonce": 0,        # para reiniciar el editor entre desafíos
-        "sc_results": [],            # historial: [{id, passed, reason}]
-        "sc_last_feedback": None,    # último intento fallido (para mostrar)
+        "sc_start_ts": None,              # timestamp de inicio del desafío actual
+        "sc_editor_nonce": 0,             # para reiniciar el editor entre desafíos
+        "sc_results": [],                 # historial: [{id, passed, reason}]
+        "sc_last_feedback": None,         # último intento fallido (para mostrar)
+        "sc_last_submitted_code": PLANTILLA,  # último código evaluado (para detectar nuevos envíos)
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -54,6 +58,7 @@ def _start_game():
     st.session_state.sc_editor_nonce += 1
     st.session_state.sc_results = []
     st.session_state.sc_last_feedback = None
+    st.session_state.sc_last_submitted_code = PLANTILLA
 
 
 def _next_challenge(passed: bool, reason: str = ""):
@@ -71,6 +76,7 @@ def _next_challenge(passed: bool, reason: str = ""):
     st.session_state.sc_idx += 1
     st.session_state.sc_last_feedback = None
     st.session_state.sc_editor_nonce += 1
+    st.session_state.sc_last_submitted_code = PLANTILLA
 
     if st.session_state.sc_idx >= len(SPEED_CHALLENGES):
         st.session_state.sc_state = "done"
@@ -301,31 +307,42 @@ elif state == "playing":
     st.markdown(f"### 🎯 Desafío {ch['id']}")
     st.info(ch["enunciado"])
 
-    # --- Editor ---
-    plantilla = "# Escribe tu código aquí (usa print)\n"
+    # --- Editor (pulsa "▶ Ejecutar y calificar" dentro del editor para enviar) ---
     codigo = code_editor(
         key=f"sc_editor_{ch['id']}_{st.session_state.sc_editor_nonce}",
-        default=plantilla,
+        default=PLANTILLA,
         height=200,
         placeholder="print(...)",
     )
 
-    # --- Botones ---
-    col1, col2, col3 = st.columns([1, 1, 1])
+    # --- Botones auxiliares (saltar / pista) ---
+    col1, col2 = st.columns([1, 1])
     with col1:
-        comprobar = st.button("✅ Comprobar", use_container_width=True, type="primary")
+        saltar = st.button("⏭️ Saltar este desafío", use_container_width=True)
     with col2:
-        saltar = st.button("⏭️ Saltar", use_container_width=True)
-    with col3:
-        with st.popover("💡 Pista", use_container_width=True):
+        with st.popover("💡 Ver pista", use_container_width=True):
             st.code(ch["pista"], language="python")
 
-    if comprobar:
-        passed, msg, _got = _check_answer(codigo or "", ch["expected"])
+    if saltar:
+        _next_challenge(False, "Saltado")
+        st.rerun()
+
+    # --- Detectar nuevo envío del editor ---
+    # El editor solo manda valor cuando el alumno toca su botón interno
+    # "▶ Ejecutar y calificar". Para distinguirlo del auto-refresh comparamos
+    # contra el último código evaluado.
+    is_new_submission = (
+        codigo is not None
+        and codigo != st.session_state.sc_last_submitted_code
+    )
+
+    if is_new_submission:
+        st.session_state.sc_last_submitted_code = codigo
         # Re-comprobamos el tiempo justo antes de aceptar
         if time.time() - start_ts > TIME_LIMIT_SECONDS:
             st.session_state.sc_state = "exploded"
             st.rerun()
+        passed, msg, _got = _check_answer(codigo, ch["expected"])
         if passed:
             st.success(f"✅ {msg} +1 punto")
             _next_challenge(True, "Correcto")
@@ -334,13 +351,8 @@ elif state == "playing":
         else:
             st.session_state.sc_last_feedback = msg
             st.error(f"❌ {msg}")
-
-    if saltar:
-        _next_challenge(False, "Saltado")
-        st.rerun()
-
-    # Mostrar último error si lo hay (persiste tras el tick)
-    if not comprobar and st.session_state.sc_last_feedback:
+    elif st.session_state.sc_last_feedback:
+        # Mantener el feedback del último intento entre ticks del auto-refresh
         st.warning(f"Último intento: {st.session_state.sc_last_feedback}")
 
 
