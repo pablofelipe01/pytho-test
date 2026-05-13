@@ -947,10 +947,316 @@ EXERCISES = [
             {"args": [[-2, -3, 4, -1, -2, 1, 5, -3]], "expected": 7},
         ],
     },
+    # ============================================================
+    # NIVEL MUY AVANZADO (41-50)
+    # ============================================================
+    {
+        "id": 41,
+        "nivel": "Muy avanzado",
+        "titulo": "Three-Sum: triplas que suman 0",
+        "enunciado": (
+            "Dada una lista de enteros, encuentra **todas** las triplas únicas "
+            "`[a, b, c]` tales que `a + b + c == 0`. Devuelve una lista de listas, "
+            "donde cada tripla está ordenada de menor a mayor (`a <= b <= c`) y la "
+            "lista exterior también está ordenada lexicográficamente. No debe haber "
+            "triplas repetidas."
+        ),
+        "pistas": [
+            "Ordena la lista primero. Para cada índice `i`, busca dos elementos en `lista[i+1:]` con suma `-lista[i]`.",
+            "Usa dos punteros `l` (izquierda) y `r` (derecha) sobre la parte ordenada: avanza el que toque según la suma.",
+            "Salta duplicados tanto en `i` como en `l` y `r` para evitar triplas repetidas.",
+        ],
+        "ejemplo": "tres_suma([-1, 0, 1, 2, -1, -4]) → [[-1, -1, 2], [-1, 0, 1]]",
+        "firma": "def tres_suma(nums):",
+        "function_name": "tres_suma",
+        "mode": "function",
+        "tests": [
+            {"args": [[-1, 0, 1, 2, -1, -4]], "expected": [[-1, -1, 2], [-1, 0, 1]]},
+            {"args": [[]], "expected": []},
+            {"args": [[0, 0, 0]], "expected": [[0, 0, 0]]},
+            {"args": [[1, 2, 3]], "expected": []},
+            {"args": [[0, 0, 0, 0]], "expected": [[0, 0, 0]]},
+            {"args": [[-2, 0, 1, 1, 2]], "expected": [[-2, 0, 2], [-2, 1, 1]]},
+            {"args": [[-4, -2, -2, -2, 0, 1, 2, 2, 2, 3, 3, 4, 4, 6, 6]], "expected": [[-4, -2, 6], [-4, 0, 4], [-4, 1, 3], [-4, 2, 2], [-2, -2, 4], [-2, 0, 2]]},
+        ],
+    },
+    {
+        "id": 42,
+        "nivel": "Muy avanzado",
+        "titulo": "N-Reinas: contar soluciones",
+        "enunciado": (
+            "Devuelve cuántas formas distintas hay de colocar `N` reinas en un tablero "
+            "`N×N` de modo que ninguna ataque a otra (no compartan fila, columna ni "
+            "diagonal). Para `N=4` hay 2 soluciones; para `N=8` hay 92."
+        ),
+        "pistas": [
+            "Backtracking por filas: en cada fila prueba todas las columnas y descarta las que entran en conflicto.",
+            "Mantén 3 conjuntos: columnas usadas, diagonales `\\` (caracterizadas por `fila - col`) y diagonales `/` (caracterizadas por `fila + col`).",
+            "Caso base: cuando `fila == N`, has colocado todas las reinas → suma 1 al contador.",
+        ],
+        "ejemplo": "n_reinas(4) → 2",
+        "firma": "def n_reinas(n):",
+        "function_name": "n_reinas",
+        "mode": "function",
+        "tests": [
+            {"args": [1], "expected": 1},
+            {"args": [2], "expected": 0},
+            {"args": [3], "expected": 0},
+            {"args": [4], "expected": 2},
+            {"args": [5], "expected": 10},
+            {"args": [6], "expected": 4},
+            {"args": [8], "expected": 92},
+        ],
+    },
+    {
+        "id": 43,
+        "nivel": "Muy avanzado",
+        "titulo": "Distancia de edición (Levenshtein)",
+        "enunciado": (
+            "Devuelve el número mínimo de operaciones (inserción, borrado o "
+            "sustitución de un carácter) necesarias para transformar la cadena `a` "
+            "en la cadena `b`. Por ejemplo, `\"kitten\"` → `\"sitting\"` requiere 3 "
+            "operaciones."
+        ),
+        "pistas": [
+            "Programación dinámica con una tabla `dp[i][j]` = distancia entre `a[:i]` y `b[:j]`.",
+            "Casos base: `dp[0][j] = j`, `dp[i][0] = i` (insertar o borrar todo).",
+            "Recurrencia: si `a[i-1] == b[j-1]`, `dp[i][j] = dp[i-1][j-1]`. Si no, `1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])`.",
+        ],
+        "ejemplo": 'dist_edicion("kitten", "sitting") → 3',
+        "firma": "def dist_edicion(a, b):",
+        "function_name": "dist_edicion",
+        "mode": "function",
+        "tests": [
+            {"args": ["", ""], "expected": 0},
+            {"args": ["", "abc"], "expected": 3},
+            {"args": ["abc", ""], "expected": 3},
+            {"args": ["abc", "abc"], "expected": 0},
+            {"args": ["abc", "abd"], "expected": 1},
+            {"args": ["kitten", "sitting"], "expected": 3},
+            {"args": ["intention", "execution"], "expected": 5},
+            {"args": ["sunday", "saturday"], "expected": 3},
+        ],
+    },
+    {
+        "id": 44,
+        "nivel": "Muy avanzado",
+        "titulo": "Mochila 0/1 (Knapsack)",
+        "enunciado": (
+            "Tienes una mochila con capacidad máxima de peso `W` y una lista de "
+            "objetos, cada uno representado como `(peso, valor)`. Puedes elegir "
+            "**a lo sumo una unidad** de cada objeto. Devuelve el valor total "
+            "máximo que cabe sin pasarse del peso."
+        ),
+        "pistas": [
+            "Programación dinámica: `dp[w]` = mejor valor con capacidad `w`.",
+            "Inicia `dp = [0] * (W+1)`. Para cada objeto `(p, v)`, recorre `w` de `W` a `p` (¡hacia atrás!) y actualiza `dp[w] = max(dp[w], dp[w-p] + v)`.",
+            "Recorrer hacia atrás evita reusar el mismo objeto dos veces.",
+        ],
+        "ejemplo": "mochila([(2,3), (3,4), (4,5), (5,6)], 5) → 7",
+        "firma": "def mochila(objetos, capacidad):",
+        "function_name": "mochila",
+        "mode": "function",
+        "tests": [
+            {"args": [[(2, 3), (3, 4), (4, 5), (5, 6)], 5], "expected": 7},
+            {"args": [[], 10], "expected": 0},
+            {"args": [[(1, 1)], 0], "expected": 0},
+            {"args": [[(1, 1), (2, 2), (3, 3)], 5], "expected": 5},
+            {"args": [[(5, 10), (4, 40), (6, 30), (3, 50)], 10], "expected": 90},
+            {"args": [[(10, 100)], 5], "expected": 0},
+            {"args": [[(1, 1), (1, 2), (1, 3)], 2], "expected": 5},
+        ],
+    },
+    {
+        "id": 45,
+        "nivel": "Muy avanzado",
+        "titulo": "Subsecuencia común más larga (LCS)",
+        "enunciado": (
+            "Dadas dos cadenas, devuelve la **longitud** de la subsecuencia común "
+            "más larga: caracteres que aparecen en ambas cadenas en el mismo orden, "
+            "no necesariamente contiguos. Por ejemplo, la LCS de `\"abcde\"` y "
+            "`\"ace\"` es `\"ace\"` (longitud 3)."
+        ),
+        "pistas": [
+            "Tabla `dp[i][j]` con `dp[i][j]` = LCS entre `a[:i]` y `b[:j]`.",
+            "Si `a[i-1] == b[j-1]`, `dp[i][j] = dp[i-1][j-1] + 1`. Si no, `dp[i][j] = max(dp[i-1][j], dp[i][j-1])`.",
+            "Casos base: `dp[0][*] = dp[*][0] = 0`.",
+        ],
+        "ejemplo": 'lcs("abcde", "ace") → 3',
+        "firma": "def lcs(a, b):",
+        "function_name": "lcs",
+        "mode": "function",
+        "tests": [
+            {"args": ["abcde", "ace"], "expected": 3},
+            {"args": ["abc", "abc"], "expected": 3},
+            {"args": ["abc", "def"], "expected": 0},
+            {"args": ["", "abc"], "expected": 0},
+            {"args": ["abc", ""], "expected": 0},
+            {"args": ["aabba", "ababa"], "expected": 4},
+            {"args": ["AGGTAB", "GXTXAYB"], "expected": 4},
+            {"args": ["abcbdab", "bdcaba"], "expected": 4},
+        ],
+    },
+    {
+        "id": 46,
+        "nivel": "Muy avanzado",
+        "titulo": "Camino más corto en laberinto (BFS)",
+        "enunciado": (
+            "Un laberinto es una matriz rectangular donde `0` representa una casilla "
+            "libre y `1` un obstáculo. Encuentra la longitud del camino más corto "
+            "desde la esquina superior-izquierda `(0,0)` hasta la inferior-derecha "
+            "`(R-1, C-1)` moviéndote sólo arriba, abajo, izquierda o derecha. La "
+            "longitud cuenta el número de **pasos** (transiciones entre casillas), "
+            "no el número de casillas. Devuelve `-1` si no hay camino o si la celda "
+            "inicial o final está bloqueada."
+        ),
+        "pistas": [
+            "Usa BFS desde `(0,0)` con `collections.deque`. Es el algoritmo natural para 'camino más corto en aristas'.",
+            "Lleva un conjunto `visitados` para no procesar la misma celda dos veces.",
+            "Cuidado: el laberinto puede tener `1×1`; en ese caso, la respuesta es 0 (start == end y libre).",
+        ],
+        "ejemplo": "camino_min([[0,0,0],[1,1,0],[0,0,0]]) → 4",
+        "firma": "def camino_min(laberinto):",
+        "function_name": "camino_min",
+        "mode": "function",
+        "tests": [
+            {"args": [[[0]]], "expected": 0},
+            {"args": [[[0, 0], [0, 0]]], "expected": 2},
+            {"args": [[[0, 1], [1, 0]]], "expected": -1},
+            {"args": [[[0, 0, 0], [1, 1, 0], [0, 0, 0]]], "expected": 4},
+            {"args": [[[1, 0]]], "expected": -1},
+            {"args": [[[0, 0, 0], [0, 1, 0], [0, 0, 0]]], "expected": 4},
+            {"args": [[[0, 0, 0, 0], [1, 1, 1, 0], [0, 0, 0, 0], [0, 1, 1, 1], [0, 0, 0, 0]]], "expected": 13},
+        ],
+    },
+    {
+        "id": 47,
+        "nivel": "Muy avanzado",
+        "titulo": "Componentes conexas en un grafo",
+        "enunciado": (
+            "Dado un grafo no dirigido con `n` nodos numerados de `0` a `n-1` y una "
+            "lista de aristas (cada arista es una tupla `(u, v)`), devuelve el número "
+            "de componentes conexas. Una componente conexa es un grupo de nodos en el "
+            "que cada par está unido por algún camino."
+        ),
+        "pistas": [
+            "Construye una lista de adyacencia desde la lista de aristas (recuerda añadir ambos sentidos).",
+            "Recorre cada nodo no visitado con DFS/BFS y aumenta el contador por cada nuevo recorrido lanzado.",
+            "Alternativa: usar Union-Find (disjoint set) y contar raíces distintas.",
+        ],
+        "ejemplo": "componentes(5, [(0,1), (1,2), (3,4)]) → 2",
+        "firma": "def componentes(n, aristas):",
+        "function_name": "componentes",
+        "mode": "function",
+        "tests": [
+            {"args": [5, [(0, 1), (1, 2), (3, 4)]], "expected": 2},
+            {"args": [4, []], "expected": 4},
+            {"args": [1, []], "expected": 1},
+            {"args": [0, []], "expected": 0},
+            {"args": [3, [(0, 1), (1, 2), (0, 2)]], "expected": 1},
+            {"args": [6, [(0, 1), (2, 3), (4, 5)]], "expected": 3},
+            {"args": [7, [(0, 1), (1, 2), (3, 4), (4, 5), (5, 3)]], "expected": 3},
+        ],
+    },
+    {
+        "id": 48,
+        "nivel": "Muy avanzado",
+        "titulo": "Evaluar expresión en RPN",
+        "enunciado": (
+            "Evalúa una expresión en **Notación Polaca Inversa** (RPN). Recibes "
+            "un string con tokens separados por espacios; cada token es un entero "
+            "(que puede ser negativo, p. ej. `\"-11\"`) o un operador `+`, `-`, `*`, "
+            "`/`. La división entre enteros **trunca hacia cero** (no hacia menos "
+            "infinito): `int(6 / -132) == 0`. Se garantiza que la expresión es "
+            "válida y nunca hay división por cero."
+        ),
+        "pistas": [
+            "Usa una pila (lista). Recorre los tokens; si es número, apila; si es operador, desapila dos veces (primero `b`, luego `a`) y apila el resultado de `a OP b`.",
+            "Para detectar un número, prueba `token.lstrip('-').isdigit()` o usa `int(token)` envuelto en `try/except`.",
+            "Para la división con truncamiento hacia cero usa `int(a / b)`, **no** `a // b` (esta hace floor y da resultados distintos con negativos).",
+        ],
+        "ejemplo": 'rpn("2 1 + 3 *") → 9',
+        "firma": "def rpn(expresion):",
+        "function_name": "rpn",
+        "mode": "function",
+        "tests": [
+            {"args": ["2 1 +"], "expected": 3},
+            {"args": ["3 4 +"], "expected": 7},
+            {"args": ["2 1 + 3 *"], "expected": 9},
+            {"args": ["4 13 5 / +"], "expected": 6},
+            {"args": ["10 6 9 3 + -11 * / * 17 + 5 +"], "expected": 22},
+            {"args": ["5"], "expected": 5},
+            {"args": ["-7"], "expected": -7},
+            {"args": ["7 -3 -"], "expected": 10},
+        ],
+    },
+    {
+        "id": 49,
+        "nivel": "Muy avanzado",
+        "titulo": "Dijkstra: distancias desde un origen",
+        "enunciado": (
+            "Dado un grafo dirigido con pesos **no negativos**, representado como un "
+            "diccionario `{nodo: [(vecino, peso), ...]}`, y un nodo de origen, "
+            "devuelve un diccionario `{nodo: distancia_minima}` con la distancia más "
+            "corta desde el origen a cada nodo **alcanzable**. Los nodos no "
+            "alcanzables no deben aparecer en el resultado. La distancia del origen "
+            "a sí mismo es 0."
+        ),
+        "pistas": [
+            "Usa `heapq` como cola de prioridad. Inicia con `(0, origen)`.",
+            "Mantén un diccionario `dist` con las mejores distancias encontradas. Al extraer un nodo, ignóralo si su distancia en la pila es mayor que la registrada.",
+            "Para cada vecino `(v, peso)`, si `dist[u] + peso < dist.get(v, infinito)`, actualiza y empuja `(nueva_dist, v)`.",
+        ],
+        "ejemplo": "dijkstra({'A':[('B',1),('C',4)], 'B':[('C',2),('D',5)], 'C':[('D',1)], 'D':[]}, 'A') → {'A':0, 'B':1, 'C':3, 'D':4}",
+        "firma": "def dijkstra(grafo, origen):",
+        "function_name": "dijkstra",
+        "mode": "function",
+        "tests": [
+            {"args": [{"A": [("B", 1), ("C", 4)], "B": [("C", 2), ("D", 5)], "C": [("D", 1)], "D": []}, "A"], "expected": {"A": 0, "B": 1, "C": 3, "D": 4}},
+            {"args": [{"A": []}, "A"], "expected": {"A": 0}},
+            {"args": [{"A": [("B", 7)], "B": [("C", 3)], "C": []}, "A"], "expected": {"A": 0, "B": 7, "C": 10}},
+            {"args": [{"A": [("B", 5)], "B": [], "C": [("A", 2)]}, "C"], "expected": {"C": 0, "A": 2, "B": 7}},
+            {"args": [{"A": [("B", 1)], "B": [], "C": []}, "A"], "expected": {"A": 0, "B": 1}},
+            {"args": [{"A": [("B", 10), ("C", 1)], "B": [], "C": [("B", 2)]}, "A"], "expected": {"A": 0, "B": 3, "C": 1}},
+        ],
+    },
+    {
+        "id": 50,
+        "nivel": "Muy avanzado",
+        "titulo": "LRU Cache (Least Recently Used)",
+        "enunciado": (
+            "Implementa una clase `LRUCache` que guarda hasta `capacidad` pares "
+            "clave-valor con política **Least Recently Used**:\n"
+            "- `__init__(self, capacidad)`: crea la caché vacía con la capacidad dada.\n"
+            "- `get(clave)`: si la clave existe, devuelve su valor y la marca como "
+            "usada más recientemente. Si no existe, devuelve `-1`.\n"
+            "- `put(clave, valor)`: inserta o actualiza la clave. Si al insertar se "
+            "supera la capacidad, descarta la clave **menos** recientemente usada.\n"
+            "Tanto `get` como `put` deben funcionar en tiempo medio O(1)."
+        ),
+        "pistas": [
+            "Truco más simple: usar `collections.OrderedDict`. `move_to_end(k)` marca como reciente; `popitem(last=False)` saca la más antigua.",
+            "También se puede hacer con un `dict` aprovechando que desde Python 3.7 mantiene el orden de inserción: `pop` y reinserta para 'mover al final'.",
+            "Si `clave` ya existe, primero quítala antes de reinsertar para refrescar su posición; sólo desaloja si tras eso superas la capacidad.",
+        ],
+        "ejemplo": "c = LRUCache(2); c.put(1,1); c.put(2,2); c.get(1) → 1; c.put(3,3); c.get(2) → -1",
+        "firma": "class LRUCache:",
+        "function_name": None,
+        "mode": "custom",
+        "tests": [
+            {"custom": "LRUCache(2).get(1)", "expected": -1},
+            {"custom": "(lambda c: [c.put(1,1), c.get(1)][-1])(LRUCache(2))", "expected": 1},
+            {"custom": "(lambda c: [c.put(1,1), c.put(2,2), c.put(3,3), c.get(1)][-1])(LRUCache(2))", "expected": -1},
+            {"custom": "(lambda c: [c.put(1,1), c.put(2,2), c.get(1), c.put(3,3), c.get(2)][-1])(LRUCache(2))", "expected": -1},
+            {"custom": "(lambda c: [c.put(1,1), c.put(2,2), c.get(1), c.put(3,3), c.get(1)][-1])(LRUCache(2))", "expected": 1},
+            {"custom": "(lambda c: [c.put(1,1), c.put(2,2), c.put(1,10), c.get(1)][-1])(LRUCache(2))", "expected": 10},
+            {"custom": "(lambda c: [c.put(1,1), c.put(2,2), c.put(1,10), c.put(3,3), c.get(2)][-1])(LRUCache(2))", "expected": -1},
+        ],
+    },
 ]
 
 
-NIVELES = ["Básico", "Intermedio", "Intermedio-superior", "Avanzado"]
+NIVELES = ["Básico", "Intermedio", "Intermedio-superior", "Avanzado", "Muy avanzado"]
 
 
 def por_nivel(nivel: str):
