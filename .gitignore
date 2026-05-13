@@ -8,3 +8,4 @@ venv/
 .claude/
 .streamlit/secrets.toml
 RESPUESTAS.md
+RESPUESTAS_CONTRARRELOJ.md
